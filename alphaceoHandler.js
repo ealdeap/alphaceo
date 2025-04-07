@@ -103,7 +103,7 @@ function applySectionStyles(sec) {
 	}
 
 	if (pathname.startsWith(route)) {
-		// Object.assign(sec.style, initStylesNavBar);
+		Object.assign(sec.style, initStylesNavBar);
 		setTimeout(() => {
 			void sec.offsetHeight;
 			Object.assign(sec.style, sectionStyleInit);
