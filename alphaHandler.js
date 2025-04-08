@@ -114,12 +114,27 @@ function getStyleValues(sec) {
 	};
 }
 
+function observeDropdownDirection(node) {
+	node.classList.remove("top-full");
+	node.classList.add("bottom-full");
+}
+
 function applySectionStyles(sec) {
 	const pathname = window.location.pathname;
 	const button = document.querySelector(
 		"button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0"
 	);
- 
+
+	const observer = new MutationObserver((mutationsList) => {
+		for (const mutation of mutationsList) {
+			if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+				console.log("New child added:", mutation.addedNodes[0]);
+				mutation.addedNodes[0].classList.remove("top-full");
+				mutation.addedNodes[0].classList.add("bottom-full");
+			}
+		}
+	});
+
 	if (!initStylesNavBar) {
 		initStylesNavBar = getStyleValues(sec);
 	}
@@ -135,26 +150,14 @@ function applySectionStyles(sec) {
 		sec.addEventListener("mouseleave", sectionHandlers.mouseLeave);
 		// button.addEventListener("click", sectionHandlers.clickButton);
 
-        const observer = new MutationObserver((mutationsList) => {
-            for (const mutation of mutationsList) {
-              if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                console.log('New child added:', mutation.addedNodes[0]);
-                
-                mutation.addedNodes[0].classList.remove('top-full')
-                mutation.addedNodes[0].classList.add('bottom-full')
-          
-              }
-            }
-          });
-          
-          observer.observe(button.parentElement, {
-            childList: true, 
-            subtree: false 
-          });
-          
+		observer.observe(button.parentElement, {
+			childList: true,
+			subtree: false,
+		});
+
 		return;
-        
 	} else {
+		observer.disconnect();
 		sec.removeEventListener("mouseenter", sectionHandlers.mouseEnter);
 		sec.removeEventListener("mouseleave", sectionHandlers.mouseLeave);
 		// button.removeEventListener("click", sectionHandlers.clickButton);
@@ -277,7 +280,6 @@ const observer = new MutationObserver((mutationsList) => {
 })();
 
 function initPaymentsHandler() {
-
 	window.addEventListener("locationchange", () => {
 		const newPathname = window.location.pathname;
 		if (document.readyState === "complete") {
@@ -285,13 +287,13 @@ function initPaymentsHandler() {
 				previousPathname.startsWith(route) &&
 				!newPathname.startsWith(route)
 			) {
-                console.log("locationchange NOT runing");
+				console.log("locationchange NOT runing");
 				triggerCloneNav();
 			} else if (
 				!previousPathname.startsWith(route) &&
 				newPathname.startsWith(route)
 			) {
-                console.log("locationchange runing");
+				console.log("locationchange runing");
 				observer.observe(document.body, { childList: true, subtree: true });
 			} else {
 				console.log("not runing in same url");
@@ -308,19 +310,19 @@ function initPaymentsHandler() {
 		) {
 			console.log("Page was reloaded");
 			if (newPathname.startsWith(route)) {
-                console.log("load runing");
+				console.log("load runing");
 				observer.observe(document.body, { childList: true, subtree: true });
 			}
 		}
-        previousPathname = newPathname;
+		previousPathname = newPathname;
 	});
 
 	document.addEventListener("DOMContentLoaded", () => {
 		const newPathname = window.location.pathname;
 		addLoaderAnimation();
-        console.log("DOMContentLoaded");
+		console.log("DOMContentLoaded");
 		if (newPathname.startsWith(route)) {
-            console.log("DOMContentLoaded runing");
+			console.log("DOMContentLoaded runing");
 			observer.observe(document.body, { childList: true, subtree: true });
 		}
 		previousPathname = newPathname;
