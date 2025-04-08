@@ -83,21 +83,25 @@ const sectionHandlers = {
 	},
 	mouseLeave: () => {
 		const section = document.querySelector("section");
-        const button = document.querySelector('button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0');
+		const button = document.querySelector(
+			"button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0"
+		);
 		if (section) {
-            section.style.width = "120px"
-        };
+			section.style.width = "120px";
+		}
 		if (button.nextElementSibling) {
-            button.click()
-        };
+			button.click();
+		}
 	},
 	clickButton: () => {
-        const button = document.querySelector('button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0');
-		if (!button.nextElementSibling) {
-            setTimeout(() => {
-                button.nextSibling.style.translate = 'translateY(-100%)'
-            }, 500);
-        };
+		const button = document.querySelector(
+			"button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0"
+		);
+		if (button.nextElementSibling) {
+			setTimeout(() => {
+				button.nextSibling.style.translate = "translateY(-100%)";
+			}, 500);
+		}
 	},
 };
 
@@ -112,7 +116,9 @@ function getStyleValues(sec) {
 
 function applySectionStyles(sec) {
 	const pathname = window.location.pathname;
-    const button = document.querySelector('button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0');
+	const button = document.querySelector(
+		"button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0"
+	);
 
 	if (!initStylesNavBar) {
 		initStylesNavBar = getStyleValues(sec);
@@ -126,15 +132,15 @@ function applySectionStyles(sec) {
 		}, 500);
 		sec.addEventListener("mouseenter", sectionHandlers.mouseEnter);
 		sec.addEventListener("mouseleave", sectionHandlers.mouseLeave);
-        button.addEventListener("click", sectionHandlers.clickButton);
+		button.addEventListener("click", sectionHandlers.clickButton);
 		return;
 	} else {
 		sec.removeEventListener("mouseenter", sectionHandlers.mouseEnter);
 		sec.removeEventListener("mouseleave", sectionHandlers.mouseLeave);
-        button.removeEventListener("click", sectionHandlers.clickButton);
+		button.removeEventListener("click", sectionHandlers.clickButton);
 		setTimeout(() => {
 			void sec.offsetHeight;
-            sec.style.width = ''
+			sec.style.width = "";
 			Object.assign(sec.style, initStylesNavBar);
 		}, 500);
 
@@ -251,6 +257,14 @@ const observer = new MutationObserver((mutationsList) => {
 })();
 
 function initPaymentsHandler() {
+
+    window.addEventListener("beforeunload", () => {
+        if (window.location.pathname.startsWith(route)) {
+            window.location.hash = "r";
+        }
+    });
+    
+
 	window.addEventListener("locationchange", () => {
 		const newPathname = window.location.pathname;
 		if (document.readyState === "complete") {
@@ -264,10 +278,16 @@ function initPaymentsHandler() {
 				newPathname.startsWith(route)
 			) {
 				observer.observe(document.body, { childList: true, subtree: true });
-			}
+			} else if (window.location.hash === "#r") {
+                if (newPathname.startsWith(route)) {
+                    observer.observe(document.body, { childList: true, subtree: true });
+                }
+                window.location.hash.remove
+            } 
 		}
 		previousPathname = newPathname;
 	});
+
 
 	document.addEventListener("DOMContentLoaded", () => {
 		addLoaderAnimation();
