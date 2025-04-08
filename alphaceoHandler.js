@@ -258,13 +258,6 @@ const observer = new MutationObserver((mutationsList) => {
 
 function initPaymentsHandler() {
 
-    window.addEventListener("beforeunload", () => {
-        if (window.location.pathname.startsWith(route)) {
-            window.location.hash = "r";
-        }
-    });
-    
-
 	window.addEventListener("locationchange", () => {
 		const newPathname = window.location.pathname;
 		if (document.readyState === "complete") {
@@ -272,27 +265,42 @@ function initPaymentsHandler() {
 				previousPathname.startsWith(route) &&
 				!newPathname.startsWith(route)
 			) {
+                console.log("locationchange NOT runing");
 				triggerCloneNav();
 			} else if (
 				!previousPathname.startsWith(route) &&
 				newPathname.startsWith(route)
 			) {
+                console.log("locationchange runing");
 				observer.observe(document.body, { childList: true, subtree: true });
-			} else if (window.location.hash === "#r") {
-                if (newPathname.startsWith(route)) {
-                    observer.observe(document.body, { childList: true, subtree: true });
-                }
-                window.location.hash.remove
-            } 
+			} else {
+				console.log("not runing in same url");
+			}
 		}
 		previousPathname = newPathname;
 	});
 
+	window.addEventListener("load", () => {
+		const newPathname = window.location.pathname;
+		if (
+			PerformanceNavigationTiming.navigation.type ===
+			PerformanceNavigationTiming.navigation.TYPE_RELOAD
+		) {
+			console.log("Page was reloaded");
+			if (newPathname.startsWith(route)) {
+                console.log("load runing");
+				observer.observe(document.body, { childList: true, subtree: true });
+			}
+		}
+        previousPathname = newPathname;
+	});
 
 	document.addEventListener("DOMContentLoaded", () => {
-		addLoaderAnimation();
 		const newPathname = window.location.pathname;
+		addLoaderAnimation();
+        console.log("DOMContentLoaded");
 		if (newPathname.startsWith(route)) {
+            console.log("DOMContentLoaded runing");
 			observer.observe(document.body, { childList: true, subtree: true });
 		}
 		previousPathname = newPathname;
