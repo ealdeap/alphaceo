@@ -284,7 +284,9 @@ function initPaymentsHandler() {
 		const newPathname = window.location.pathname;
 		if (
 			performance.navigation.type ===
-			performance.navigation.TYPE_RELOAD
+			performance.navigation.TYPE_RELOAD ||
+			performance.navigation.type === 
+			performance.navigation.TYPE_NAVIGATE
 		) {
 			console.log("Page was reloaded");
 			if (newPathname.startsWith(route)) {
