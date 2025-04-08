@@ -1,8 +1,9 @@
 let initStylesNavBar;
 let debounceTimeout;
+let isRunning = false
+let dropdownObserver = null; 
 const route = "/payments";
 let previousPathname = window.location.pathname;
-let dropdownObserver = null; 
 const validSidList = new Set(["19", "20", "21", "22", "23", "24"]);
 
 const centeredStyle = {
@@ -314,10 +315,13 @@ function initPaymentsHandler() {
 	});
 
 	window.addEventListener("load", () => {
+        if (isRunning) {return}
 		const newPathname = window.location.pathname;
 		if (
-			performance.navigation.type ===
-			performance.navigation.TYPE_RELOAD
+            performance.navigation.type ===
+			performance.navigation.TYPE_RELOAD ||
+			performance.navigation.type === 
+			performance.navigation.TYPE_NAVIGATE
 		) {
 			console.log("Page was reloaded");
 			if (newPathname.startsWith(route)) {
@@ -333,11 +337,16 @@ function initPaymentsHandler() {
 		addLoaderAnimation();
 		console.log("DOMContentLoaded");
 		if (newPathname.startsWith(route)) {
-			console.log("DOMContentLoaded runing");
+            isRunning = true
+            console.log("DOMContentLoaded runing");
 			observer.observe(document.body, { childList: true, subtree: true });
+			setTimeout(() => {
+				isRunning = false
+			}, 1000);
 		}
 		previousPathname = newPathname;
 	});
 }
 
 export { initPaymentsHandler };
+
