@@ -2,6 +2,7 @@ let initStylesNavBar;
 let debounceTimeout;
 const route = "/payments";
 let previousPathname = window.location.pathname;
+let dropdownObserver = null; 
 const validSidList = new Set(["19", "20", "21", "22", "23", "24"]);
 
 const centeredStyle = {
@@ -125,7 +126,13 @@ function applySectionStyles(sec) {
 		"button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0"
 	);
 
-	const observer = new MutationObserver((mutationsList) => {
+	// Clean up any existing observer before creating a new one
+	if (dropdownObserver) {
+		dropdownObserver.disconnect();
+		dropdownObserver = null;
+	}
+
+	dropdownObserver = new MutationObserver((mutationsList) => {
 		for (const mutation of mutationsList) {
 			if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
 				console.log("New child added:", mutation.addedNodes[0]);
@@ -150,14 +157,18 @@ function applySectionStyles(sec) {
 		sec.addEventListener("mouseleave", sectionHandlers.mouseLeave);
 		// button.addEventListener("click", sectionHandlers.clickButton);
 
-		observer.observe(button.parentElement, {
-			childList: true,
-			subtree: false,
-		});
+        dropdownObserver.observe(button.parentElement, {
+            childList: true,
+            subtree: false,
+        });
 
 		return;
 	} else {
-		observer.disconnect();
+        if (dropdownObserver) {
+            dropdownObserver.disconnect();
+            dropdownObserver = null;
+        }
+
 		sec.removeEventListener("mouseenter", sectionHandlers.mouseEnter);
 		sec.removeEventListener("mouseleave", sectionHandlers.mouseLeave);
 		// button.removeEventListener("click", sectionHandlers.clickButton);
