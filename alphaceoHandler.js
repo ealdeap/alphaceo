@@ -83,7 +83,21 @@ const sectionHandlers = {
 	},
 	mouseLeave: () => {
 		const section = document.querySelector("section");
-		if (section) section.style.width = "120px";
+        const button = document.querySelector('button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0');
+		if (section) {
+            section.style.width = "120px"
+        };
+		if (button.nextElementSibling) {
+            button.click()
+        };
+	},
+	clickButton: () => {
+        const button = document.querySelector('button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0');
+		if (!button.nextElementSibling) {
+            setTimeout(() => {
+                button.nextSibling.style.translate = 'translateY(-100%)'
+            }, 500);
+        };
 	},
 };
 
@@ -98,6 +112,8 @@ function getStyleValues(sec) {
 
 function applySectionStyles(sec) {
 	const pathname = window.location.pathname;
+    const button = document.querySelector('button.w-10.h-10.flex.items-center.justify-center.flex-shrink-0');
+
 	if (!initStylesNavBar) {
 		initStylesNavBar = getStyleValues(sec);
 	}
@@ -110,12 +126,15 @@ function applySectionStyles(sec) {
 		}, 500);
 		sec.addEventListener("mouseenter", sectionHandlers.mouseEnter);
 		sec.addEventListener("mouseleave", sectionHandlers.mouseLeave);
+        button.addEventListener("click", sectionHandlers.clickButton);
 		return;
 	} else {
 		sec.removeEventListener("mouseenter", sectionHandlers.mouseEnter);
 		sec.removeEventListener("mouseleave", sectionHandlers.mouseLeave);
+        button.removeEventListener("click", sectionHandlers.clickButton);
 		setTimeout(() => {
 			void sec.offsetHeight;
+            sec.style.width = ''
 			Object.assign(sec.style, initStylesNavBar);
 		}, 500);
 
