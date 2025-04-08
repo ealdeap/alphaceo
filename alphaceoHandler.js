@@ -1,8 +1,11 @@
+
 let initStylesNavBar;
 let debounceTimeout;
 const route = "/payments";
 let previousPathname = window.location.pathname;
+let isRunning = false
 const validSidList = new Set(["19", "20", "21", "22", "23", "24"]);
+
 
 const centeredStyle = {
 	display: "flex",
@@ -281,6 +284,8 @@ function initPaymentsHandler() {
 	});
 
 	window.addEventListener("load", () => {
+		if (isRunning) {return}
+		
 		const newPathname = window.location.pathname;
 		if (
 			performance.navigation.type ===
@@ -302,8 +307,12 @@ function initPaymentsHandler() {
 		addLoaderAnimation();
         console.log("DOMContentLoaded");
 		if (newPathname.startsWith(route)) {
+			isRunning = true
             console.log("DOMContentLoaded runing");
 			observer.observe(document.body, { childList: true, subtree: true });
+			setTimeout(() => {
+				isRunning = false
+			}, 1000);
 		}
 		previousPathname = newPathname;
 	});
